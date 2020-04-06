@@ -8,19 +8,12 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
-
-## Dockerizing
+## Running in docker
 We're using [this guide][docker-with-phoenix] to set up a testing environment in
 which our Phoenix app talks to Docker.
 
+Use `docker-compose up` to create the container. Tests can be run in the
+container with `docker-compose run anypro mix test`.
+
 <!-- Invisible List of References -->
-[docker-with-phoenix]: https://semaphoreci.com/community/tutorials/dockerizing-elixir-and-phoenix-applications
+[docker-with-phoenix]: https://github.com/fireproofsocks/phoenix-docker-compose

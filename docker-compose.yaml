@@ -1,0 +1,26 @@
+version: '3.7'
+
+volumes:
+    anypro_postgres:
+
+services:
+    anypro:
+        container_name: anypro
+        depends_on:
+            - anypro-postgres
+        build: .
+        ports:
+            - "4000:4000"
+        environment:
+            - DB_HOST=anypro-postgres
+        command:
+            - ./run.sh
+        volumes:
+            - type: bind
+              source: .
+              target: /app
+    anypro-postgres:
+        container_name: anypro-postgres
+        image: postgres
+        volumes:
+            - anypro_postgres:/var/lib/postgresql/data
