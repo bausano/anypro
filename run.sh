@@ -32,9 +32,6 @@ mix ecto.migrate
 echo "\nTesting the installation..."
 mix test
 
-echo "\nResetting the test database..."
-MIX_ENV=test mix ecto.reset
-
 echo "\n Launching Phoenix web server..."
 # Start the phoenix web server
 mix phx.server

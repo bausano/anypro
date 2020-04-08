@@ -85,7 +85,9 @@ defmodule AnyproWeb.CoachControllerTest do
     assert response(conn, :created)
   end
 
-  test "POST /api/coaches creates duplicate", %{conn: conn} do
+  test "POST /api/coaches cannot create duplicate", %{conn: conn} do
+    conn = post(conn, "/api/coaches", @valid_body)
+    assert response(conn, :created)
     conn = post(conn, "/api/coaches", @valid_body)
     assert response(conn, :conflict)
   end
