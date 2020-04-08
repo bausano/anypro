@@ -30,8 +30,10 @@ mix ecto.create
 mix ecto.migrate
 
 echo "\nTesting the installation..."
-# "Prove" that install was successful by running the tests
 mix test
+
+echo "\nResetting the test database..."
+MIX_ENV=test mix ecto.reset
 
 echo "\n Launching Phoenix web server..."
 # Start the phoenix web server

@@ -22,13 +22,8 @@ defmodule Anypro.Coach do
     coach
     |> cast(attrs, [:name, :email, :phone, :bio, :pricing, :pga_qualified, :profile_picture])
     |> validate_required([:name, :email, :phone, :bio, :pricing, :pga_qualified, :profile_picture])
-
-    # Email must be unique as it might eventually become how we authenticate coaches.
-    cast(coach, attrs, [:email])
-      |> unique_constraint(:email)
-    # Slug must be unique as that's how one gets to coache's profile.
-    cast(coach, attrs, [:slug])
-      |> unique_constraint(:slug)
+    |> unique_constraint(:email)
+    |> unique_constraint(:slug)
   end
 
   # Creates a slug from provided coach name.

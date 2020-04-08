@@ -37,7 +37,7 @@ defmodule AnyproWeb.CoachControllerTest do
         %{
           "file_url" => "https://dummyimage.com/600x400/000/fff",
           "field" => %{
-            "ref" => "profile_image"
+            "ref" => "profile_picture"
           }
         },
         %{

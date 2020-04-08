@@ -15,6 +15,7 @@ defmodule Anypro.Repo.Migrations.CreateCoaches do
       timestamps()
     end
 
-    create unique_index(:coaches, [:email, :slug])
+    create unique_index(:coaches, [:email])
+    create unique_index(:coaches, [:slug])
   end
 end

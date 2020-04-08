@@ -72,23 +72,22 @@ defmodule AnyproWeb.CoachController do
         |> answer_for_field.("pga_qualified", "boolean")
         |> answer_for_field.("phone", "phone_number")
         |> answer_for_field.("pricing", "text")
-        |> answer_for_field.("profile_image", "file_upload")
+        |> answer_for_field.("profile_picture", "file_url")
 
         case coach do
           :error -> send_resp(conn, 422, "")
           coach ->
-            coach_from_map = fn map -> Map.merge(%Coach{}, map) end
-
-            db_insert = coach
+            coach = coach
             |> Map.put("slug", Coach.slugified_name(coach["name"]))
             # Maps all string keys to atoms.
             |> Map.new(fn {k, v} -> { String.to_atom(k), v } end)
-            |> coach_from_map.()
-            |> Repo.insert()
 
-            case db_insert do
+            case Repo.insert Coach.changeset(%Coach{}, coach) do
               {:ok, _} -> send_resp(conn, :created, "")
-              {:error, _} -> send_resp(conn, :conflict, "")
+              # TODO: Handle all kinds of errors and don't coerce them to 409.
+              {:error, error} ->
+                IO.inspect error
+                send_resp(conn, :conflict, "")
             end
         end
     end
