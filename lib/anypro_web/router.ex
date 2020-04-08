@@ -19,8 +19,9 @@ defmodule AnyproWeb.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", AnyproWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", AnyproWeb do
+    pipe_through :api
+
+    post "/coaches", CoachController, :store
+  end
 end
