@@ -45,8 +45,13 @@ defmodule AnyproWeb.CoachController do
       coach when is_map(coach) ->
         render conn, "show.html", coach: coach
       _ ->
-        # TODO: Make a 404 page.
-        text conn "404"
+        # TODO: Test this view.
+        # TODO: Figure out how to make layout compatible with our use case.
+        conn
+        |> put_status(:not_found)
+        |> put_view(AnyproWeb.ErrorView)
+        |> put_layout(false)
+        |> render(:"404")
     end
   end
 
