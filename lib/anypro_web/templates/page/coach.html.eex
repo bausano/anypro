@@ -1,5 +1,0 @@
-<h1>
-  Well this is a coach man
-</h1>
-
-<%= gettext "Welcome to %{name}!", name: "Phoenix" %>

@@ -39,10 +39,18 @@ defmodule AnyproWeb.CoachController do
     }
   } |> ExJsonSchema.Schema.resolve()
 
-  def index(conn, _params) do
-    render(conn, "coach.html")
+  # Views a coach profile.
+  def show(conn, %{"slug" => slug}) do
+    case Repo.one(from c in Coach, where: c.slug == ^slug) do
+      coach when is_map(coach) ->
+        render conn, "show.html", coach: coach
+      _ ->
+        # TODO: Make a 404 page.
+        text conn "404"
+    end
   end
 
+  # Inserts a new coach into the database.
   def store(conn, params) do
     # TODO: Do validation as a middleware.
     case ExJsonSchema.Validator.validate(@typeform_store_schema, params) do

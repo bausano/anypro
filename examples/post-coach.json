@@ -1,0 +1,48 @@
+{
+    "form_response": {
+        "answers": [
+            {
+                "email": "test@example.com",
+                "field": {
+                    "ref": "email"
+                }
+            },
+            {
+                "text": "Lorem ipsum dolor",
+                "field": {
+                    "ref": "name"
+                }
+            },
+            {
+                "phone_number": "+123456",
+                "field": {
+                    "ref": "phone"
+                }
+            },
+            {
+                "text": "Lorem ipsum dolor",
+                "field": {
+                    "ref": "bio"
+                }
+            },
+            {
+                "boolean": true,
+                "field": {
+                    "ref": "pga_qualified"
+                }
+            },
+            {
+                "file_url": "https://dummyimage.com/600x400/000/fff",
+                "field": {
+                    "ref": "profile_picture"
+                }
+            },
+            {
+                "text": "$10",
+                "field": {
+                    "ref": "pricing"
+                }
+            }
+        ]
+    }
+}

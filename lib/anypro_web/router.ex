@@ -17,6 +17,8 @@ defmodule AnyproWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+
+    get "/:slug", CoachController, :show
   end
 
   scope "/api", AnyproWeb do

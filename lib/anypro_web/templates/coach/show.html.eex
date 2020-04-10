@@ -1,0 +1,13 @@
+<h1>
+  Coach <%= @coach.name %>
+</h1>
+
+<ul>
+  <li><%= @coach.id %></li>
+  <li><%= @coach.slug %></li>
+  <li><%= @coach.email %></li>
+  <li><%= @coach.profile_picture %></li>
+  <li><%= @coach.bio %></li>
+  <li><%= @coach.pricing %></li>
+  <li><%= @coach.phone %></li>
+</ul>
