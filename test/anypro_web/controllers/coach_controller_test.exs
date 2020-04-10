@@ -5,15 +5,15 @@ defmodule AnyproWeb.CoachControllerTest do
     "form_response" => %{
       "answers" => [
         %{
-          "text" => "Lorem ipsum dolor",
-          "field" => %{
-            "ref" => "name"
-          }
-        },
-        %{
           "email" => "test@example.com",
           "field" => %{
             "ref" => "email"
+          }
+        },
+        %{
+          "text" => "Lorem ipsum dolor",
+          "field" => %{
+            "ref" => "name"
           }
         },
         %{
@@ -52,7 +52,7 @@ defmodule AnyproWeb.CoachControllerTest do
 
   test "POST /api/coaches empty request", %{conn: conn} do
     conn = post(conn, "/api/coaches", %{})
-    assert response(conn, 422)
+    assert response(conn, :unprocessable_entity)
   end
 
   test "POST /api/coaches empty answers array", %{conn: conn} do
@@ -61,7 +61,7 @@ defmodule AnyproWeb.CoachControllerTest do
         "answers" => []
       }
     })
-    assert response(conn, 422)
+    assert response(conn, :unprocessable_entity)
   end
 
   test "POST /api/coaches required fields are missing", %{conn: conn} do
@@ -77,7 +77,7 @@ defmodule AnyproWeb.CoachControllerTest do
         ]
       }
     })
-    assert response(conn, 422)
+    assert response(conn, :unprocessable_entity)
   end
 
   test "POST /api/coaches", %{conn: conn} do
@@ -85,10 +85,30 @@ defmodule AnyproWeb.CoachControllerTest do
     assert response(conn, :created)
   end
 
-  test "POST /api/coaches cannot create duplicate", %{conn: conn} do
+  test "POST /api/coaches cannot create duplicate emails", %{conn: conn} do
     conn = post(conn, "/api/coaches", @valid_body)
     assert response(conn, :created)
     conn = post(conn, "/api/coaches", @valid_body)
     assert response(conn, :conflict)
+  end
+
+  test "POST /api/coaches can have duplicate names", %{conn: conn} do
+    conn = post(conn, "/api/coaches", @valid_body)
+    assert response(conn, :created)
+
+    # We change the email for the second call.
+    body = update_in(
+      @valid_body["form_response"]["answers"],
+      fn answers ->
+        [%{
+          "email" => "another-test@example.com",
+          "field" => %{
+            "ref" => "email"
+          }
+        }] ++ List.delete_at(answers, 0)
+      end
+    )
+    conn = post(conn, "/api/coaches", body)
+    assert response(conn, :created)
   end
 end

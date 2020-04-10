@@ -1,6 +1,9 @@
 defmodule AnyproWeb.CoachController do
   use AnyproWeb, :controller
 
+  # Imports the "last" function.
+  import Ecto.Query
+
   alias Anypro.Coach
   alias Anypro.Repo
 
@@ -36,13 +39,17 @@ defmodule AnyproWeb.CoachController do
     }
   } |> ExJsonSchema.Schema.resolve()
 
+  def index(conn, _params) do
+    render(conn, "coach.html")
+  end
+
   def store(conn, params) do
     # TODO: Do validation as a middleware.
     case ExJsonSchema.Validator.validate(@typeform_store_schema, params) do
       {:error, errors} ->
         IO.inspect errors
         IO.inspect params
-        send_resp(conn, 422, "")
+        send_resp(conn, :unprocessable_entity, "")
       :ok ->
         answers = params["form_response"]["answers"]
 
@@ -75,20 +82,58 @@ defmodule AnyproWeb.CoachController do
         |> answer_for_field.("profile_picture", "file_url")
 
         case coach do
-          :error -> send_resp(conn, 422, "")
+          :error -> send_resp(conn, :unprocessable_entity, "")
           coach ->
-            coach = coach
-            |> Map.put("slug", Coach.slugified_name(coach["name"]))
-            # Maps all string keys to atoms.
-            |> Map.new(fn {k, v} -> { String.to_atom(k), v } end)
+            insert_coach_with_unique_slug(
+              conn,
+              Coach.slugified_name(coach["name"]),
+              # Don't put any prefix to the slug initially and hope it's unique.
+              "",
+              # Maps all string keys to atoms.
+              Map.new(coach, fn {k, v} -> { String.to_atom(k), v } end)
+            )
+        end
+    end
+  end
 
-            case Repo.insert Coach.changeset(%Coach{}, coach) do
-              {:ok, _} -> send_resp(conn, :created, "")
-              # TODO: Handle all kinds of errors and don't coerce them to 409.
-              {:error, error} ->
-                IO.inspect error
-                send_resp(conn, :conflict, "")
-            end
+  # This function can be called recursivelly until a unique slug is
+  # found. It concats strings `slug` and `slug_suffix`, sets them as
+  # :slug field into the provideded coach map and tries to insert it.
+  # If an error about uniqueness of the slug is returned, it calls
+  # itself with `slug_prefix` being equal to "-${next_primary_id}".
+  defp insert_coach_with_unique_slug(conn, slug, slug_suffix, coach_without_slug) do
+    coach = Map.put(coach_without_slug, :slug, slug <> slug_suffix)
+    case Repo.insert Coach.changeset(%Coach{}, coach) do
+      # TODO: Trigger webhook.
+      {:ok, record} ->
+        location = AnyproWeb.Endpoint.url() <> "/" <> record.slug
+        conn
+        |> put_resp_header("location", location)
+        |> send_resp(:created, "")
+      # TODO: Handle all kinds of errors and don't coerce them to 409.
+      {:error, changeset} ->
+        case List.first(changeset.errors) do
+          # Email already taken. This is a big problem which we cannot
+          # ready deal with due to using typeform.
+          # TODO: Send some kind of notification to us about this error.
+          # TODO: Return an error message in the body.
+          {:email, _} -> send_resp(conn, :conflict, "")
+          # Slug already exists, we will append an id to it.
+          {:slug, _} ->
+            # Take current max coach id, increments it by 1 and stringifies it.
+            next_id = Coach
+            |> last
+            |> Repo.one
+            |> (fn record -> record.id + 1 end).()
+            |> Integer.to_string
+
+            # Call itself but this time with a slug prefix.
+            insert_coach_with_unique_slug(
+              conn,
+              slug,
+              "-" <> next_id,
+              coach_without_slug
+            )
         end
     end
   end

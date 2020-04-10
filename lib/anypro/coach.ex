@@ -20,8 +20,8 @@ defmodule Anypro.Coach do
   @doc false
   def changeset(coach, attrs) do
     coach
-    |> cast(attrs, [:name, :email, :phone, :bio, :pricing, :pga_qualified, :profile_picture])
-    |> validate_required([:name, :email, :phone, :bio, :pricing, :pga_qualified, :profile_picture])
+    |> cast(attrs, [:name, :slug, :email, :phone, :bio, :pricing, :pga_qualified, :profile_picture])
+    |> validate_required([:name, :slug, :email, :phone, :bio, :pricing, :pga_qualified, :profile_picture])
     |> unique_constraint(:email)
     |> unique_constraint(:slug)
   end
