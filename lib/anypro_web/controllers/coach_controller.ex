@@ -84,14 +84,18 @@ defmodule AnyproWeb.CoachController do
         conn
         |> put_resp_header("location", location)
         |> send_resp(:created, "")
-      # TODO: Handle all kinds of errors and don't coerce them to 409.
       {:error, changeset} ->
         case List.first(changeset.errors) do
-          # Email already taken. This is a big problem which we cannot
-          # ready deal with due to using typeform.
+          # Email already taken. This is a big problem which we cannot really
+          # deal with due to using typeform.
           # TODO: Send some kind of notification to us about this error.
-          # TODO: Return an error message in the body.
-          {:email, _} -> send_resp(conn, :conflict, "")
+          {:email, _} ->
+            conn
+            |> put_status(:conflict)
+            |> json(%{
+              "error" => "email_in_use",
+              "message" => "This email address is already in use."
+            })
           # Slug already exists, we will append an id to it.
           {:slug, _} ->
             # Take current max coach id, increments it by 1 and stringifies it.

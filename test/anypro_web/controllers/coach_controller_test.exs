@@ -89,7 +89,10 @@ defmodule AnyproWeb.CoachControllerTest do
     conn = post(conn, "/api/coaches", @valid_body)
     assert response(conn, :created)
     conn = post(conn, "/api/coaches", @valid_body)
-    assert response(conn, :conflict)
+    assert json_response(conn, :conflict) == %{
+      "error" => "email_in_use",
+      "message" => "This email address is already in use."
+    }
   end
 
   test "POST /api/coaches can have duplicate names", %{conn: conn} do
