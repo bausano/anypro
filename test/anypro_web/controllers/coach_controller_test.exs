@@ -80,9 +80,24 @@ defmodule AnyproWeb.CoachControllerTest do
     assert response(conn, :unprocessable_entity)
   end
 
-  test "POST /api/coaches", %{conn: conn} do
+  test "POST /api/coaches and GET /{slug}", %{conn: conn} do
     conn = post(conn, "/api/coaches", @valid_body)
     assert response(conn, :created)
+
+    # Gets the location where the coach profile has been created.
+    location = Enum.find(
+      conn.resp_headers,
+      fn header ->
+        {name, _} = header
+        name == "location"
+      end
+    )
+    assert location != nil
+    {"location", coach_profile_url} = location
+    # Grabs the html of the coach profile.
+    conn = get(conn, coach_profile_url)
+    assert conn.status == 200
+    assert conn.resp_body =~ conn.assigns.coach.name
   end
 
   test "POST /api/coaches cannot create duplicate emails", %{conn: conn} do
@@ -113,5 +128,11 @@ defmodule AnyproWeb.CoachControllerTest do
     )
     conn = post(conn, "/api/coaches", body)
     assert response(conn, :created)
+  end
+
+  test "GET /{slug} returns 404 if coach does not exist", %{conn: conn} do
+    conn = get(conn, "/this-slug-does-not-exist")
+    assert conn.status == 404
+    assert conn.resp_body =~ "Looks like this link is broken"
   end
 end

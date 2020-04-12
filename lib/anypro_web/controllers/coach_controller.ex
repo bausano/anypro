@@ -13,7 +13,6 @@ defmodule AnyproWeb.CoachController do
       coach when is_map(coach) ->
         render conn, "show.html", coach: coach
       _ ->
-        # TODO: Test this view.
         # TODO: Figure out how to make layout compatible with our use case.
         conn
         |> put_status(:not_found)

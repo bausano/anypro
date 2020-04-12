@@ -41,6 +41,10 @@ defmodule AnyproWeb.Plugs.Typeform do
   def call(%Plug.Conn{params: params} = conn, _init) do
     case ExJsonSchema.Validator.validate(@typeform_schema, params) do
       {:error, errors} ->
+        # TODO: Some logging would be nice here instead of printing into the
+        # console. Since this scenario after we implement the token checking is
+        # going to be breaking, maybe even trigger a webhook.
+        IO.puts
         IO.inspect errors
         IO.inspect params
         conn
