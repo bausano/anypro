@@ -63,6 +63,13 @@ Generally, we are going to be interested in following fields.
 - `.form_response.answers.[].file_url` will be a Typeform API url with an
   uploaded file.
 
+There's a plug [`lib/anypro_web/plugs/typeform.ex`](lib/anypro_web/plugs/typeform.ex)
+for typeform endpoints. This plug checks that the request has a correct
+structure and takes the data from the params. In the controllers, the data can
+be accessed with `conn.assigns.answers`. There's a todo to implement checking of
+the token which is sent from typeform to prevent malicious users from spamming
+us with new profile creations.
+
 ## New database table
 To set up new database table, refer to [this Ecto tutorial][ecto-new-table]. For
 list of database fields refer to the [documentation here][ecto-types]. The
